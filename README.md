@@ -20,7 +20,7 @@ type SignUpStep2Form struct {
 type SignUpDTO struct {	
 	Name             string
 	Lastname         string
-    Path             string `dto:"username"`
+        Path             string `dto:"username"`
 	ContactEmail     string  
 }
 ```
