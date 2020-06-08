@@ -96,7 +96,7 @@ func TestMethod(ctx *gin.Context) {
 
 Service
 ```go
-func (s *Service) SignUp(stx *cs.ContextService) (dto *SignUpDTO) error {
+func (s *Service) SignUp(dto *SignUpDTO) error {
 	// Process user sign up
 }
 ```
