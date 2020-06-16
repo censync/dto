@@ -27,7 +27,7 @@ func RequestToDTO(dst interface{}, src ...interface{}) error {
 	}
 
 	if len(src) > 0 {
-		for _, val := range src {
+		for index, val := range src {
 			srcRv := reflect.ValueOf(val)
 			switch srcRv.Kind() {
 			case reflect.Struct:
@@ -35,9 +35,9 @@ func RequestToDTO(dst interface{}, src ...interface{}) error {
 				if err != nil {
 					return err
 				}
-			case reflect.Ptr:
+			case reflect.Ptr, reflect.UnsafePointer:
 				if srcRv.IsNil() || !srcRv.CanAddr() {
-					errors.New(fmt.Sprintf("cannot convert source to dto: %s argument is nil", srcRv.Type()))
+					return errors.New(fmt.Sprintf("cannot convert source to dto: %d argument is nil", index))
 				}
 				err := parseStruct(dstRv, srcRv.Elem())
 				if err != nil {
@@ -64,7 +64,7 @@ func parseStruct(dst reflect.Value, srcVal reflect.Value) error {
 		tag := srcType.Field(i).Tag.Get(dtoFieldTag)
 
 		if tag == "" {
-			return errors.New(fmt.Sprintf("empty dto tag \"%s\"value for field: %s", dtoFieldTag, srcType.Field(i).Type))
+			return errors.New(fmt.Sprintf("empty dto tag \"%s\" value for field: %s", dtoFieldTag, srcType.Field(i).Name))
 		}
 
 		// Looking "tag_field_name", converted to "TagFieldName"

@@ -13,6 +13,8 @@ func TestSetFieldTag(t *testing.T) {
 }
 
 func TestRequestToDTO(t *testing.T) {
+	SetFieldTag("dto")
+
 	struct1 := struct {
 		Field1 int `dto:"field1"`
 	}{
@@ -28,7 +30,7 @@ func TestRequestToDTO(t *testing.T) {
 	}{
 		3,
 	}
-	struct4 := &struct {
+	struct4 := struct {
 		Field4 int `dto:"field4"`
 	}{
 		4,
@@ -41,7 +43,7 @@ func TestRequestToDTO(t *testing.T) {
 		Field4  int
 	}{}
 
-	err := RequestToDTO(&dtoStruct, struct1, struct2, struct3, struct4)
+	err := RequestToDTO(&dtoStruct, struct1, struct2, struct3, &struct4)
 
 	if err != nil {
 		t.Fatal("RequestToDTO assign error", err)
