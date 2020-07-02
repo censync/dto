@@ -36,7 +36,7 @@ func RequestToDTO(dst interface{}, src ...interface{}) error {
 					return err
 				}
 			case reflect.Ptr, reflect.UnsafePointer:
-				if srcRv.IsNil() || !srcRv.CanAddr() {
+				if srcRv.IsNil() {
 					return errors.New(fmt.Sprintf("cannot convert source to dto: %d argument is nil", index))
 				}
 				err := parseStruct(dstRv, srcRv.Elem())
@@ -52,6 +52,9 @@ func RequestToDTO(dst interface{}, src ...interface{}) error {
 	return nil
 }
 func parseStruct(dst reflect.Value, srcVal reflect.Value) error {
+	if srcVal.Type().Kind() != reflect.Struct {
+		return errors.New(fmt.Sprintf("unsupported type for dest argument: %s", srcVal.Type().Key()))
+	}
 	srcType := srcVal.Type()
 	fieldsCount := srcVal.NumField()
 	for i := 0; i < fieldsCount; i++ {
