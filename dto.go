@@ -66,26 +66,27 @@ func parseStruct(dst reflect.Value, srcVal reflect.Value) error {
 
 		tag := srcType.Field(i).Tag.Get(dtoFieldTag)
 
+		var targetField reflect.Value
+
 		if tag == "" {
-			return errors.New(fmt.Sprintf("empty dto tag \"%s\" value for field: %s", dtoFieldTag, srcType.Field(i).Name))
+			targetField = dst.Elem().FieldByName(srcType.Field(i).Name)
+			if !targetField.IsValid() {
+				return errors.New(fmt.Sprintf("field not found by name and empty dto tag \"%s\" value for: %s", dtoFieldTag, srcType.Field(i).Name))
+			}
+		} else {
+
+			// Looking "tag_field_name", converted to "TagFieldName"
+			// for public field in target structure
+			targetField = dst.Elem().FieldByName(tagValueToFieldName(tag))
+
+			// Looking for tag value in target structure
+			if !targetField.IsValid() {
+				targetField = findFieldByTagValue(dst.Elem(), tag)
+			}
 		}
 
-		// Looking "tag_field_name", converted to "TagFieldName"
-		// for public field in target structure
-		targetField := dst.Elem().FieldByName(tagValueToFieldName(tag))
-
-		// Looking for simple value
 		if !targetField.IsValid() {
-			targetField = dst.Elem().FieldByName(tag)
-		}
-
-		// Looking for tag value in target structure
-		if !targetField.IsValid() {
-			targetField = findFieldByTagValue(dst.Elem(), tag)
-		}
-
-		if !targetField.IsValid() {
-			return errors.New(fmt.Sprintf("not found field: %s", tag))
+			return errors.New(fmt.Sprintf("not found field with tag: %s", tag))
 		}
 
 		if !targetField.CanSet() {

@@ -16,7 +16,7 @@ func TestRequestToDTO(t *testing.T) {
 	SetFieldTag("dto")
 
 	struct1 := struct {
-		Field1 int `dto:"field1"`
+		Field1 int
 	}{
 		1,
 	}
