@@ -32,8 +32,10 @@ func TestRequestToDTO(t *testing.T) {
 	}
 	struct4 := struct {
 		Field4 int `dto:"field4"`
+		Field5 int `dto:"-"`
 	}{
 		4,
+		5,
 	}
 
 	dtoStruct := struct {
@@ -41,6 +43,7 @@ func TestRequestToDTO(t *testing.T) {
 		FieldT2 int
 		Field3  int `dto:"custom_field3"`
 		Field4  int
+		Field5  int
 	}{}
 
 	err := RequestToDTO(&dtoStruct, struct1, struct2, struct3, &struct4)
@@ -65,6 +68,9 @@ func TestRequestToDTO(t *testing.T) {
 		t.Fatal("cannot assign struct by pointer")
 	}
 
+	if dtoStruct.Field5 != 0 {
+		t.Fatal("skip tag has no effect")
+	}
 }
 
 func Test_tagToFieldName(t *testing.T) {

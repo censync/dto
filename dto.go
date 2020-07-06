@@ -68,7 +68,9 @@ func parseStruct(dst reflect.Value, srcVal reflect.Value) error {
 
 		var targetField reflect.Value
 
-		if tag == "" {
+		if tag == "-" {
+			continue
+		} else if tag == "" {
 			targetField = dst.Elem().FieldByName(srcType.Field(i).Name)
 			if !targetField.IsValid() {
 				return errors.New(fmt.Sprintf("field not found by name and empty dto tag \"%s\" value for: %s", dtoFieldTag, srcType.Field(i).Name))
